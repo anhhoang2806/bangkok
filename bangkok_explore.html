@@ -282,14 +282,13 @@ var PHOTO=window.__PHOTO=(window.__PHOTO||{});
 cards.forEach(function(c){
  if(c._thumb)return;
  var cat=c.dataset.cat||'';
- var t=document.createElement('div');t.className='thumb';
+ var t=document.createElement('div');t.className='thumb';t.style.display='none';
  var tn=TINT[cat];if(tn)t.style.background='linear-gradient(135deg,'+tn[0]+','+tn[1]+')';
- var ic=document.createElement('div');ic.className='ic';ic.textContent=ICON[cat]||'📍';t.appendChild(ic);
  var img=document.createElement('img');img.alt='';img.decoding='async';t.appendChild(img);
  c.insertBefore(t,c.firstChild);c._thumb=t;c._img=img;
 });
 if(!GKEY){
-function setImgW(c,u){if(!c._img)return;c._img.onload=function(){c._img.classList.add('on');};c._img.src=u;}
+function setImgW(c,u){if(!c._img)return;c._img.onload=function(){if(c._thumb)c._thumb.style.display='';c._img.classList.add('on');};c._img.src=u;}
 function norm2(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ');}
 var STOP={bangkok:1,silom:1,sathorn:1,sathon:1,bangrak:1,the:1,and:1,of:1,road:1,rd:1,soi:1,bts:1,mrt:1,thailand:1,cafe:1,restaurant:1};
 function toks(s){return norm2(s).split(/\s+/).filter(function(w){return w.length>=3&&!STOP[w];});}
@@ -301,7 +300,7 @@ if(iow){cards.forEach(function(c){iow.observe(c);});}else{cards.forEach(function
 return;
 }
 (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await(a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src="https://maps."+c+"apis.com/maps/api/js?"+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({key:GKEY,v:"weekly"});
-function setImg(c,url){if(!c._img)return;c._img.onload=function(){c._img.classList.add('on');};c._img.src=url;}
+function setImg(c,url){if(!c._img)return;c._img.onload=function(){if(c._thumb)c._thumb.style.display='';c._img.classList.add('on');};c._img.src=url;}
 function resolve(c){var q=c.dataset.q,lat=+c.dataset.lat,lng=+c.dataset.lng;if(!q)return;if(PHOTO[q]!==undefined){if(PHOTO[q])setImg(c,PHOTO[q]);return;}PHOTO[q]=null;c._thumb.classList.add('skel');
  google.maps.importLibrary('places').then(function(lib){return lib.Place.searchByText({textQuery:q,fields:['photos'],locationBias:{lat:lat,lng:lng},maxResultCount:1,language:'vi',region:'th'});}).then(function(res){c._thumb.classList.remove('skel');var pl=res&&res.places&&res.places[0];var url=(pl&&pl.photos&&pl.photos[0])?pl.photos[0].getURI({maxWidth:520}):null;if(url){PHOTO[q]=url;setImg(c,url);}}).catch(function(){c._thumb.classList.remove('skel');});}
 var io=('IntersectionObserver'in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);resolve(e.target);}});},{rootMargin:'300px'}):null;
