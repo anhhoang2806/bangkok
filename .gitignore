@@ -1,0 +1,7 @@
+# Local tooling / preview — not part of the site
+.claude/
+__pycache__/
+*.pyc
+
+# Stale QR (old/wrong target) — replaced by bangkok_qr.png
+dashboard_qr.png
